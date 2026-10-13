@@ -1,0 +1,675 @@
+<!-- TEST BUBBLE TEA LAB -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bubble Tea Lab</title>
+<style>
+:root {
+  --bg: #10111b;
+  --panel: #1b1d2b;
+  --panel2: #24263a;
+  --text: #f8f5ff;
+  --muted: #aaaac1;
+  --pink: #ff76b7;
+  --cyan: #66e6dc;
+  --border: #35374c;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  min-height: 100vh;
+}
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+header {
+  padding: 26px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #26203e, #172e3b);
+  border-bottom: 1px solid var(--border);
+}
+.logo { font-size: 46px; }
+header h1 {
+  margin: 5px 0;
+  font-size: clamp(28px, 5vw, 42px);
+}
+header h1 span { color: var(--pink); }
+header p { color: var(--muted); margin: 8px 0 0; }
+main { max-width: 1000px; margin: auto; padding: 22px 16px 50px; }
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.tab {
+  flex: 1;
+  min-width: 130px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  padding: 13px 10px;
+  border-radius: 12px;
+}
+.tab.active {
+  background: var(--pink);
+  color: #261321;
+  border-color: var(--pink);
+  font-weight: 750;
+}
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 22px;
+  border-radius: 18px;
+  margin-bottom: 18px;
+}
+h2 { margin-top: 0; }
+h3 { margin-bottom: 8px; }
+.muted { color: var(--muted); }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+}
+.field { margin-bottom: 17px; }
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 650;
+}
+select, input[type="range"], input[type="text"] { width: 100%; }
+select, input[type="text"] {
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+}
+input[type="range"] { accent-color: var(--pink); }
+.value-line {
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: 14px;
+}
+.primary, .secondary, .danger {
+  border: 0;
+  border-radius: 11px;
+  padding: 12px 16px;
+  font-weight: 750;
+}
+.primary { background: var(--pink); color: #281324; }
+.secondary { background: var(--panel2); color: var(--text); border: 1px solid var(--border); }
+.danger { background: #482334; color: #ffd7e7; }
+.primary:hover { filter: brightness(1.08); }
+.actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 15px; }
+.result {
+  border: 1px solid #3a5260;
+  background: linear-gradient(145deg, #1e2637, #172d35);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+}
+.drink-emoji { font-size: 54px; }
+.result h2 { color: var(--cyan); margin: 5px 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
+.tag {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #303449;
+  color: #d9f9f5;
+  font-size: 13px;
+}
+.score { color: var(--cyan); font-weight: 800; }
+.recipe { line-height: 1.7; padding-left: 22px; }
+.drink-card {
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  padding: 16px;
+  border-radius: 14px;
+  margin-top: 12px;
+}
+.drink-card h3 { margin-top: 0; }
+.drink-card p { color: var(--muted); line-height: 1.5; }
+.empty { text-align: center; color: var(--muted); padding: 30px 10px; }
+footer { text-align: center; color: var(--muted); font-size: 13px; padding: 18px; }
+.hidden { display: none !important; }
+.notice { color: var(--cyan); min-height: 24px; margin-top: 10px; }
+.checks { display: flex; flex-wrap: wrap; gap: 9px; }
+.check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  padding: 9px 11px;
+  border-radius: 10px;
+}
+.check input { accent-color: var(--pink); }
+@media (max-width: 500px) {
+  .panel { padding: 16px; }
+  header { padding: 20px 12px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🧋</div>
+  <h1>Bubble Tea <span>Lab</span></h1>
+  <p>Experiment with flavors. Create your own combinations.</p>
+</header>
+
+<main>
+  <nav class="tabs" aria-label="Main menu">
+    <button class="tab active" data-tab="generator">🎲 Flavor Generator</button>
+    <button class="tab" data-tab="creator">🧪 Drink Creator</button>
+    <button class="tab" data-tab="favorites">⭐ Favorites</button>
+  </nav>
+
+  <section id="generator" class="panel">
+    <h2>🎲 Flavor Generator</h2>
+    <p class="muted">Generate a new bubble tea idea and discover its recipe.</p>
+
+    <div class="grid">
+      <div class="field">
+        <label for="baseFilter">Drink base</label>
+        <select id="baseFilter">
+          <option value="any">Surprise me!</option>
+          <option value="black">Black tea</option>
+          <option value="green">Green tea</option>
+          <option value="jasmine">Jasmine tea</option>
+          <option value="fruit">Fruit tea</option>
+          <option value="milk">Milk only</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sweetness">🍯 Sweetness: <span id="sweetValue">60%</span></label>
+        <input id="sweetness" type="range" min="0" max="100" value="60">
+        <div class="value-line"><span>Less sweet</span><span>Very sweet</span></div>
+      </div>
+      <div class="field">
+        <label for="sourness">🍋 Sourness: <span id="sourValue">25%</span></label>
+        <input id="sourness" type="range" min="0" max="100" value="25">
+        <div class="value-line"><span>Mild</span><span>Very sour</span></div>
+      </div>
+    </div>
+
+    <button id="generateBtn" class="primary">✨ Generate Bubble Tea!</button>
+    <div id="generatorResult" class="result hidden" aria-live="polite"></div>
+  </section>
+
+  <section id="creator" class="panel hidden">
+    <h2>🧪 Create Your Own Drink</h2>
+    <p class="muted">Choose your ingredients, name your drink and create a custom recipe.</p>
+
+    <div class="field">
+      <label for="drinkName">Your drink's name</label>
+      <input id="drinkName" type="text" maxlength="60" placeholder="e.g. Galactic Strawberry">
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="customBase">Base</label>
+        <select id="customBase">
+          <option>Black tea</option>
+          <option>Green tea</option>
+          <option>Jasmine tea</option>
+          <option>Fruit tea</option>
+          <option>Milk</option>
+          <option>Plant-based milk</option>
+          <option>Coconut water</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="customFlavor">Main flavor</label>
+        <select id="customFlavor">
+          <option>Strawberry</option>
+          <option>Mango</option>
+          <option>Peach</option>
+          <option>Raspberry</option>
+          <option>Lychee</option>
+          <option>Matcha</option>
+          <option>Taro</option>
+          <option>Vanilla</option>
+          <option>Chocolate</option>
+          <option>Passion fruit</option>
+          <option>Blueberry</option>
+          <option>Coconut</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="customMilk">Milk option</label>
+        <select id="customMilk">
+          <option>No milk</option>
+          <option>Milk</option>
+          <option>Oat milk</option>
+          <option>Coconut milk</option>
+          <option>Soy milk</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Toppings (choose as many as you like)</label>
+      <div class="checks" id="toppingChecks">
+        <label class="check"><input type="checkbox" value="Tapioca pearls"> Tapioca pearls</label>
+        <label class="check"><input type="checkbox" value="Popping boba"> Popping boba</label>
+        <label class="check"><input type="checkbox" value="Coconut jelly"> Coconut jelly</label>
+        <label class="check"><input type="checkbox" value="Ice"> Ice</label>
+        <label class="check"><input type="checkbox" value="Whipped cream"> Whipped cream</label>
+        <label class="check"><input type="checkbox" value="Pudding"> Pudding</label>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="field">
+        <label for="customSweet">Sweetness: <span id="customSweetValue">50%</span></label>
+        <input id="customSweet" type="range" min="0" max="100" value="50">
+      </div>
+      <div class="field">
+        <label for="customSour">Sourness: <span id="customSourValue">20%</span></label>
+        <input id="customSour" type="range" min="0" max="100" value="20">
+      </div>
+    </div>
+
+    <button id="createBtn" class="primary">🧋 Create My Drink</button>
+    <div id="creatorResult" class="result hidden" aria-live="polite"></div>
+  </section>
+
+  <section id="favorites" class="panel hidden">
+    <h2>⭐ My Favorites</h2>
+    <p class="muted">Recipes are saved locally in this browser on this device.</p>
+    <div id="favoriteList"></div>
+    <div class="actions">
+      <button id="exportBtn" class="secondary">📋 Copy All Recipes</button>
+      <button id="clearBtn" class="danger">Delete All</button>
+    </div>
+    <p id="favoriteNotice" class="notice" aria-live="polite"></p>
+  </section>
+</main>
+
+<footer>Bubble Tea Lab · Your home flavor laboratory 🧋</footer>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+
+const bases = [
+  { name: "Black tea", type: "black" },
+  { name: "Green tea", type: "green" },
+  { name: "Jasmine tea", type: "jasmine" },
+  { name: "Fruit tea", type: "fruit" },
+  { name: "Milk", type: "milk" }
+];
+
+const flavors = [
+  { name: "Strawberry", sweet: 60, sour: 35, emoji: "🍓" },
+  { name: "Mango", sweet: 80, sour: 20, emoji: "🥭" },
+  { name: "Peach", sweet: 65, sour: 25, emoji: "🍑" },
+  { name: "Raspberry", sweet: 50, sour: 65, emoji: "🍇" },
+  { name: "Lychee", sweet: 70, sour: 30, emoji: "🌸" },
+  { name: "Matcha", sweet: 30, sour: 10, emoji: "🍵" },
+  { name: "Taro", sweet: 55, sour: 5, emoji: "💜" },
+  { name: "Vanilla", sweet: 65, sour: 0, emoji: "🍦" },
+  { name: "Chocolate", sweet: 80, sour: 0, emoji: "🍫" },
+  { name: "Passion fruit", sweet: 45, sour: 85, emoji: "🍋" },
+  { name: "Blueberry", sweet: 55, sour: 40, emoji: "🫐" },
+  { name: "Coconut", sweet: 55, sour: 5, emoji: "🥥" }
+];
+
+const recipes = {
+  "Black tea": "Brew the tea according to the package instructions, then let it cool.",
+  "Green tea": "Brew the green tea according to the package instructions and let it cool.",
+  "Jasmine tea": "Brew the jasmine tea and allow it to cool.",
+  "Fruit tea": "Brew the fruit tea and let it cool.",
+  "Milk": "Use chilled milk as your drink base.",
+  "Plant-based milk": "Use chilled plant-based milk as your drink base.",
+  "Coconut water": "Use chilled coconut water as your drink base."
+};
+
+let favorites = loadFavorites();
+
+function loadFavorites() {
+  try {
+    const value = JSON.parse(localStorage.getItem("bubbleTeaLabFavorites") || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveFavorites() {
+  try {
+    localStorage.setItem("bubbleTeaLabFavorites", JSON.stringify(favorites));
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function safeText(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+function scoreDrink(flavor, base, milk, sweet, sour, selectedToppings) {
+  let score = 100;
+  score -= Math.abs(flavor.sweet - sweet) * 0.25;
+  score -= Math.abs(flavor.sour - sour) * 0.25;
+
+  if (base.type === "fruit" && flavor.sour > 60) score += 5;
+  if (base.type === "green" && ["Mango", "Lychee", "Peach"].includes(flavor.name)) score += 5;
+  if (base.type === "black" && ["Vanilla", "Taro", "Chocolate"].includes(flavor.name)) score += 5;
+  if (milk !== "No milk" && ["Matcha", "Taro", "Vanilla", "Chocolate"].includes(flavor.name)) score += 5;
+  if (milk === "No milk" && flavor.sour > 55) score += 4;
+  if (selectedToppings.includes("Popping boba") && flavor.sour > 45) score += 3;
+  if (selectedToppings.includes("Pudding") && flavor.sweet > 55) score += 2;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function compatibilityText(score) {
+  if (score >= 90) return "Excellent match! These ingredients work really well together.";
+  if (score >= 75) return "A very promising flavor combination.";
+  if (score >= 60) return "An interesting experiment worth trying!";
+  return "A bold combination! Adjust the proportions to suit your taste.";
+}
+
+function buildRecipe(drink) {
+  const steps = [];
+  const baseInstruction = recipes[drink.base] || "Prepare your chosen base and let it cool.";
+  steps.push(baseInstruction);
+
+  if (drink.toppings.includes("Tapioca pearls")) {
+    steps.push("Prepare the tapioca pearls according to the package instructions.");
+  }
+  if (drink.toppings.includes("Popping boba")) {
+    steps.push("Add the popping boba just before serving.");
+  }
+
+  steps.push("Mix the base with the chosen flavor and milk, if using.");
+  steps.push("Adjust the amount of syrup to your preferred sweetness and sourness.");
+  if (drink.toppings.includes("Ice")) steps.push("Add ice.");
+  if (drink.toppings.length) steps.push("Add your toppings: " + drink.toppings.join(", ") + ".");
+  steps.push("Serve in a tall glass with a wide straw.");
+
+  return steps;
+}
+
+function drinkToText(drink) {
+  return [
+    "🧋 " + drink.name,
+    "Base: " + drink.base,
+    "Flavor: " + drink.flavor,
+    "Milk: " + drink.milk,
+    "Toppings: " + (drink.toppings.length ? drink.toppings.join(", ") : "None"),
+    "Sweetness: " + drink.sweet + "%",
+    "Sourness: " + drink.sour + "%",
+    "Ingredient compatibility: " + drink.score + "/100",
+    "",
+    "Preparation:",
+    ...buildRecipe(drink).map((step, index) => (index + 1) + ". " + step)
+  ].join("\n");
+}
+
+function renderDrink(drink, targetId, favoriteButton = true) {
+  const target = $(targetId);
+  const steps = buildRecipe(drink);
+  const saved = favorites.some(item => item.id === drink.id);
+
+  target.classList.remove("hidden");
+  target.innerHTML = `
+    <div class="drink-emoji">${safeText(drink.emoji || "🧋")}</div>
+    <h2>${safeText(drink.name)}</h2>
+    <p>${safeText(drink.base)} · ${safeText(drink.flavor)}</p>
+    <div class="tags">
+      <span class="tag">🥛 ${safeText(drink.milk)}</span>
+      <span class="tag">🍯 Sweetness ${drink.sweet}%</span>
+      <span class="tag">🍋 Sourness ${drink.sour}%</span>
+      ${drink.toppings.map(t => `<span class="tag">${safeText(t)}</span>`).join("")}
+    </div>
+    <p class="score">⭐ Ingredient compatibility: ${drink.score}/100</p>
+    <p>${safeText(compatibilityText(drink.score))}</p>
+    <h3>📝 Preparation</h3>
+    <ol class="recipe">${steps.map(step => `<li>${safeText(step)}</li>`).join("")}</ol>
+    <div class="actions">
+      ${favoriteButton ? `<button class="primary" data-action="favorite">${saved ? "⭐ Saved" : "☆ Add to Favorites"}</button>` : ""}
+      <button class="secondary" data-action="copy">📋 Copy Recipe</button>
+    </div>
+    <p class="notice" data-notice></p>
+  `;
+
+  target.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", async () => {
+      if (button.dataset.action === "favorite") {
+        toggleFavorite(drink);
+        renderDrink(drink, targetId, favoriteButton);
+        renderFavorites();
+      } else if (button.dataset.action === "copy") {
+        await copyText(drinkToText(drink), target.querySelector("[data-notice]"));
+      }
+    });
+  });
+}
+
+function toggleFavorite(drink) {
+  const index = favorites.findIndex(item => item.id === drink.id);
+  if (index >= 0) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.push({ ...drink, toppings: [...drink.toppings] });
+  }
+  if (!saveFavorites()) {
+    alert("Could not save favorites. Please check your browser settings.");
+  }
+}
+
+async function copyText(text, notice) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.style.position = "fixed";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const success = document.execCommand("copy");
+      area.remove();
+      if (!success) throw new Error("Copy failed");
+    }
+    if (notice) notice.textContent = "✅ Recipe copied!";
+  } catch (error) {
+    if (notice) notice.textContent = "Could not copy automatically. Please copy the recipe manually.";
+  }
+}
+
+function randomItem(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
+function generateDrink() {
+  const filter = $("baseFilter").value;
+  const availableBases = filter === "any" ? bases : bases.filter(base => base.type === filter);
+  const base = randomItem(availableBases.length ? availableBases : bases);
+  const flavor = randomItem(flavors);
+  const sweet = Number($("sweetness").value);
+  const sour = Number($("sourness").value);
+  let milk = "No milk";
+
+  if (["Taro", "Vanilla", "Chocolate", "Matcha"].includes(flavor.name)) {
+    milk = Math.random() < 0.75 ? "Milk" : "Oat milk";
+  } else if (Math.random() < 0.35) {
+    milk = "Oat milk";
+  } else if (Math.random() < 0.25) {
+    milk = "No milk";
+  }
+
+  const toppingPool = ["Tapioca pearls", "Popping boba", "Coconut jelly", "Pudding", "Ice"];
+  const selectedToppings = [];
+  const count = Math.floor(Math.random() * 3);
+  for (let i = 0; i < count; i++) {
+    selectedToppings.push(toppingPool.splice(Math.floor(Math.random() * toppingPool.length), 1)[0]);
+  }
+
+  const score = scoreDrink(flavor, base, milk, sweet, sour, selectedToppings);
+  const drink = {
+    id: "drink-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+    name: flavor.emoji + " " + flavor.name + " Bubble Tea",
+    base: base.name,
+    flavor: flavor.name,
+    milk,
+    toppings: selectedToppings,
+    sweet,
+    sour,
+    score,
+    emoji: flavor.emoji
+  };
+
+  renderDrink(drink, "generatorResult");
+}
+
+function createCustomDrink() {
+  const flavorName = $("customFlavor").value;
+  const flavor = flavors.find(item => item.name === flavorName) || flavors[0];
+  const selectedToppings = Array.from(
+    document.querySelectorAll("#toppingChecks input:checked")
+  ).map(input => input.value);
+
+  const base = { name: $("customBase").value, type: "custom" };
+  const milk = $("customMilk").value;
+  const sweet = Number($("customSweet").value);
+  const sour = Number($("customSour").value);
+  const score = scoreDrink(flavor, base, milk, sweet, sour, selectedToppings);
+  const name = $("drinkName").value.trim() || flavor.emoji + " My " + flavor.name + " Bubble Tea";
+
+  const drink = {
+    id: "custom-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7),
+    name,
+    base: base.name,
+    flavor: flavor.name,
+    milk,
+    toppings: selectedToppings,
+    sweet,
+    sour,
+    score,
+    emoji: flavor.emoji
+  };
+
+  renderDrink(drink, "creatorResult");
+}
+
+function renderFavorites() {
+  const list = $("favoriteList");
+  if (!favorites.length) {
+    list.innerHTML = '<div class="empty">⭐ No favorite recipes yet.<br>Generate a drink and save it here!</div>';
+    return;
+  }
+
+  list.innerHTML = favorites.map(drink => `
+    <article class="drink-card">
+      <h3>${safeText(drink.emoji || "🧋")} ${safeText(drink.name)}</h3>
+      <p>${safeText(drink.base)} · ${safeText(drink.flavor)} · Compatibility ${drink.score}/100</p>
+      <div class="actions">
+        <button class="secondary" data-fav-action="view" data-id="${safeText(drink.id)}">📖 View Recipe</button>
+        <button class="secondary" data-fav-action="copy" data-id="${safeText(drink.id)}">📋 Copy</button>
+        <button class="danger" data-fav-action="remove" data-id="${safeText(drink.id)}">Remove</button>
+      </div>
+      <div class="hidden" data-fav-recipe></div>
+    </article>
+  `).join("");
+
+  list.querySelectorAll("button").forEach(button => {
+    button.addEventListener("click", async () => {
+      const drink = favorites.find(item => item.id === button.dataset.id);
+      if (!drink) return;
+      const card = button.closest(".drink-card");
+      const recipeBox = card.querySelector("[data-fav-recipe]");
+
+      if (button.dataset.favAction === "remove") {
+        favorites = favorites.filter(item => item.id !== drink.id);
+        saveFavorites();
+        renderFavorites();
+      } else if (button.dataset.favAction === "copy") {
+        await copyText(drinkToText(drink), $("favoriteNotice"));
+      } else if (button.dataset.favAction === "view") {
+        recipeBox.classList.toggle("hidden");
+        if (!recipeBox.classList.contains("hidden")) {
+          recipeBox.innerHTML = `<pre style="white-space:pre-wrap;font:inherit">${safeText(drinkToText(drink))}</pre>`;
+        }
+      }
+    });
+  });
+}
+
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+    document.querySelectorAll("main > section").forEach(section => section.classList.add("hidden"));
+    button.classList.add("active");
+    $(button.dataset.tab).classList.remove("hidden");
+    if (button.dataset.tab === "favorites") renderFavorites();
+  });
+});
+
+$("generateBtn").addEventListener("click", generateDrink);
+$("createBtn").addEventListener("click", createCustomDrink);
+
+$("sweetness").addEventListener("input", event => {
+  $("sweetValue").textContent = event.target.value + "%";
+});
+$("sourness").addEventListener("input", event => {
+  $("sourValue").textContent = event.target.value + "%";
+});
+$("customSweet").addEventListener("input", event => {
+  $("customSweetValue").textContent = event.target.value + "%";
+});
+$("customSour").addEventListener("input", event => {
+  $("customSourValue").textContent = event.target.value + "%";
+});
+
+$("exportBtn").addEventListener("click", async () => {
+  if (!favorites.length) {
+    $("favoriteNotice").textContent = "There are no recipes to export yet.";
+    return;
+  }
+  await copyText(favorites.map(drinkToText).join("\n\n--------------------\n\n"), $("favoriteNotice"));
+});
+
+$("clearBtn").addEventListener("click", () => {
+  if (!favorites.length) {
+    $("favoriteNotice").textContent = "Your favorites list is already empty.";
+    return;
+  }
+  if (confirm("Are you sure you want to delete all your favorite recipes?")) {
+    favorites = [];
+    saveFavorites();
+    renderFavorites();
+    $("favoriteNotice").textContent = "All favorites have been deleted.";
+  }
+});
+
+// Generate a drink automatically when the page opens.
+generateDrink();
+renderFavorites();
+</script>
+</body>
+</html>
